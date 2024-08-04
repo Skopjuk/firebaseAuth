@@ -1,0 +1,89 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home page</title>
+</head>
+<body>
+<h1>Welcome to Firebase Authentication with Golang</h1>
+<h2>Login to access premium content</h2>
+<form action="">
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" />
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" />
+    <button type="submit" id="signin">Sign In</button>
+</form>
+<p>Or <a href="signup.html">Sign up</a></p>
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";    import {
+        getAuth,
+        signInWithEmailAndPassword,
+        signInAnonymously,
+        onAuthStateChanged,
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAfpOYYWU3Ukk7gJ7oFAivqQc_VPqOplw8",
+        authDomain: "kitchenmistakeerazer.firebaseapp.com",
+        projectId: "kitchenmistakeerazer",
+        storageBucket: "kitchenmistakeerazer.appspot.com",
+        messagingSenderId: "88812562290",
+        appId: "1:88812562290:web:9b2c6cb3271c60b226dfeb",
+        measurementId: "G-1LLX4JBLBF"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    function login(e) {
+        e.preventDefault();
+        const email = document.querySelector("#email").value;
+        const password = document.querySelector("#password").value;
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                user
+                    .getIdToken()
+                    .then((idToken) => {
+                        // redirect to the premium page
+                        window.location.href = `http://localhost:8080/premium?auth-token=${idToken}`;
+                    })
+                    .catch((err) => {
+                        alert("Failed to authorize token");
+                        window.location.href = 'http://localhost:8080/';
+                        console.error("Token error: ", err);
+                    });
+            })
+            .catch((err) => {
+                console.log("Sign-in error: ", err);
+            });
+
+        clearForm();
+    }
+
+    function clearForm() {
+        document.querySelector("#email").value = "";
+        document.querySelector("#password").value = "";
+    }
+
+    document.getElementById("signin").onclick = login;
+
+    // checking if the user is logged in
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            console.log(user);
+        } else {
+            console.log("No user signed in");
+        }
+    });
+</script>
+</body>
+</html>
